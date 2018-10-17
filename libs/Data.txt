@@ -1,0 +1,80 @@
+https://juejin.im/post/5abb76726fb9a028c5233d57
+https://blog.csdn.net/zhulei12345/article/details/49444599
+
+用户信息表  user_info
+user_id              用户编号        主键
+username            名称
+password             密码
+avatar              头像
+signature           签名
+fans_num           粉丝数
+follow_num             关注数
+moving_num           动态数
+
+用户之间关系表  user_relation
+user_relation_id     编号        主键   
+user_id              用户        外键
+follow_id            关注的人    外键
+follow_time        关注的时间
+
+圈子标签表  group_tag
+group_tag_id
+name    标签名
+
+圈子信息表  group_info
+group_id
+name    圈子名
+description 圈子描述
+group_img   圈子头像
+fans_num           粉丝数
+topic_num           帖子数
+group_tag_id   圈子所属的标签
+
+圈子帖子关系表
+
+用户圈子关系表  user_group
+编号
+用户id
+圈子id
+
+
+
+
+动态数据表      moving_info
+moving_id       动态编号
+user_id         发布动态的用户id
+titile          标题
+content         内容
+comment_num     评论数
+praise_num      点赞数
+collect_num     收藏数
+forward_num     转发数
+time            发布时间
+type            类型（0：原创，1：转发）
+
+
+用户动态索引表  user_moving_index
+user_moving_index_id    索引编号
+user_id     用户编号
+moving_id   动态编号
+author_id   作者编号
+time        发布时间
+
+
+动态和动态的关系表  moving_relation
+movving_relation_id
+
+
+// A原创发动态：
+1. 在   user_moving_A中添加这条动态
+2. 更新 user_info_A 中 moving_num
+3. 在   user_moving_index中添加A发送的这条消息索引（A的编号和消息编号）
+4. 在t_user_relation_A中找到所有关注A的人，比如B,C,D,E,F等等。并发在这些用户的t_uer_msg_index中插入A的这条信息索引，
+    比如名人微博可以并发多个进程来实现对粉丝的消息同步。
+
+// A转发B的动态moving_B
+1. 在moving_info 中添加这条动态moving_a  type为2
+2. 更新t_user_info_A中moving_num
+3. 在t_uer_msg_index_A中插入A发的这条消息的索引（A的编号和消息编号）
+4. 在t_msg_info_B中更新msg_b的Transferred_count和Transfer_count
+5. 在t_msg_msg_relation中添加User_a,msg_a与User_b，msg_b的转发关系，page_index为Transferred_count%page_count
